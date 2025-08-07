@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Trade List - JournalPlus{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+  <!-- Alerts -->
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+
+    <!-- Top Row: Add Trade Button + Summary -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0">📈 Your Trades</h2>
+    <a href="{% url 'add_trade' %}" class="btn btn-success">+ Add Trade</a>
+    <a href="{% url 'import_trades' %}" class="btn btn-success">📥 Import Trades</a>
+
+  </div>
+
+  <!-- Trade Summary -->
+  <div class="row text-center mb-4">
+    <div class="col-md-3">
+      <div class="card bg-success text-white">
+        <div class="card-body">
+          <h5>Total P&L</h5>
+          <p class="fs-5">₹{{ total_pl }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-primary text-white">
+        <div class="card-body">
+          <h5>Wins</h5>
+          <p class="fs-5">{{ wins }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-danger text-white">
+        <div class="card-body">
+          <h5>Losses</h5>
+          <p class="fs-5">{{ losses }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-secondary text-white">
+        <div class="card-body">
+          <h5>Break-evens</h5>
+          <p class="fs-5">{{ breakevens }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter -->
+  <form method="get" class="mb-3 d-flex align-items-center gap-2">
+    <label for="type" class="form-label me-2 mb-0">Filter by:</label>
+    <select name="type" id="type" class="form-select w-auto">
+      <option value="">All Trades</option>
+      <option value="intraday" {% if request.GET.type == "intraday" %}selected{% endif %}>Intraday</option>
+      <option value="swing" {% if request.GET.type == "swing" %}selected{% endif %}>Swing</option>
+      <option value="fno" {% if request.GET.type == "fno" %}selected{% endif %}>F&O</option>
+    </select>
+    <button type="submit" class="btn btn-dark">Apply</button>
+  </form>
+
+  <!-- Trade Table -->
+  <div class="table-responsive">
+    <table class="table table-bordered align-middle table-hover">
+      <thead class="table-dark">
+        <tr>
+          <th>Date</th>
+          <th>Symbol</th>
+          <th>Type</th>
+          <th>Direction</th>
+          <th>Qty</th>
+          <th>Entry</th>
+          <th>Exit</th>
+          <th>P&L</th>
+          <th>Image</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for trade in trades %}
+        <tr>
+          <td>{{ trade.exit_date }}</td>
+          <td>{{ trade.trade_symbol }}</td>
+          <td>{{ trade.trade_category|title }}</td>
+          <td>{{ trade.trade_direction|title }}</td>
+          <td>{{ trade.quantity }}</td>
+          <td>₹{{ trade.entry_price }}</td>
+          <td>₹{{ trade.exit_price }}</td>
+          <td class="{% if trade.trade_return > 0 %}text-success{% elif trade.trade_return < 0 %}text-danger{% endif %}">
+            ₹{{ trade.trade_return }}
+          </td>
+          <td>
+            {% if trade.image %}
+            <a href="{{ trade.image.url }}" target="_blank">
+              <img src="{{ trade.image.url }}" alt="Trade Image" class="img-thumbnail" style="width: 60px; height: auto;">
+              </a>
+            {% else %}
+              -
+            {% endif %}
+          </td>
+          <td>
+            <a href="{% url 'trade_detail' trade.pk %}" class="btn btn-sm btn-outline-primary">View</a>
+            <a href="{% url 'edit_trade' trade.id %}" class="btn btn-sm btn-warning">Edit</a>
+            <a href="{% url 'delete_trade' trade.id %}" class="btn btn-sm btn-danger"
+               onclick="return confirm('Are you sure to delete this trade?')">Delete</a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="9" class="text-center">No trades found.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends 'base.html' %} {% block title %}Trade Calendar - JournalPlus {% endblock %}
+</br>
+{% block content %}
+<div class="mt-4 container">
+  <h3 class="text-primary mb-4">Trade Calendar</h3>
+
+  <!-- Month selector -->
+  <div class="mb-3">
+    <label>Select Month</label>
+    <input type="month" id="monthPicker" class="form-control w-auto" />
+  </div>
+
+  <!-- Calendar grid -->
+  <div id="calendarGrid" class="row gy-2">
+    <!-- JS will render days here -->
+  </div>
+
+  <!-- Day modal -->
+  <div class="modal fade" id="dayModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalDate"></h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+          ></button>
+        </div>
+        <div class="modal-body" id="modalTrades">
+          <!-- trades for chosen day -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const sampleData = {
+    "2025-08-01": {
+      pnl: -500,
+      trades: [
+        /*...*/
+      ],
+    },
+    "2025-08-02": {
+      pnl: 1200,
+      trades: [
+        /*...*/
+      ],
+    },
+    // ...
+  };
+  function renderCalendar(yearMonth) {
+    const container = document.getElementById("calendarGrid");
+    container.innerHTML = "";
+    // generate all days of month
+    const date = new Date(yearMonth + "-01");
+    const year = date.getFullYear(),
+      month = date.getMonth();
+    const days = new Date(year, month + 1, 0).getDate();
+    for (let d = 1; d <= days; d++) {
+      const dayString = `${year}-${String(month + 1).padStart(2, "0")}-${String(
+        d
+      ).padStart(2, "0")}`;
+      const info = sampleData[dayString];
+      const cls = info
+        ? info.pnl >= 0
+          ? "bg-success text-white"
+          : "bg-danger text-white"
+        : "bg-light";
+      const div = document.createElement("div");
+      div.className = "col-1 day-cell p-2 text-center " + cls;
+      div.innerText = d;
+      if (info) div.onclick = () => showDetails(dayString);
+      container.appendChild(div);
+    }
+  }
+  document.getElementById("monthPicker").onchange = (e) =>
+    renderCalendar(e.target.value);
+  function showDetails(day) {
+    document.getElementById("modalDate").innerText = day;
+    document.getElementById("modalTrades").innerHTML = JSON.stringify(
+      sampleData[day].trades
+    );
+    new bootstrap.Modal(document.getElementById("dayModal")).show();
+  }
+  // initialize with current month
+  document.addEventListener("DOMContentLoaded", () => {
+    const m = new Date().toISOString().slice(0, 7);
+    document.getElementById("monthPicker").value = m;
+    renderCalendar(m);
+  });
+</script>
+{% endblock %}

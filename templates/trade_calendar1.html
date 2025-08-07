@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}Calendar - JournalPlus{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <h3 class="text-primary">{{ month_name }} {{ year }} - Trade Calendar</h3>
+
+  <div class="d-flex justify-content-between my-3">
+    <a class="btn btn-outline-secondary" href="?month={{ month|add:"-1" }}&year={{ year }}">← Prev</a>
+    <a class="btn btn-outline-secondary" href="?month={{ month|add:"1" }}&year={{ year }}">Next →</a>
+  </div>
+
+  <table class="table table-bordered text-center">
+    <thead class="table-light">
+        
+      <tr>
+        {% for day in week_days %}
+        <th>{{ day }}</th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for week in month_calendar %}
+      <tr>
+        {% for day in week %}
+        {% if day == 0 %}
+        <td class="bg-light"></td>
+        {% else %}
+        <td>
+          <div class="fw-bold">{{ day }}</div>
+          {% if day in trades_by_day %}
+            {% for trade in trades_by_day|get_item:day %}
+              <div class="small">
+                {{ trade.trade_symbol }} <span class="text-muted">({{ trade.trade_return }})</span>
+              </div>
+            {% endfor %}
+          {% endif %}
+        </td>
+        {% endif %}
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base.html" %} {% block content %}
+<div class="container mt-4">
+  <h2>📥 Import Trades</h2>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="form-group">
+      <label for="csv_file">Upload File</label>
+      <input
+        type="file"
+        name="import_file"
+        accept=".csv, .xls, .xlsx"
+        class="form-control"
+        required
+      />
+    </div>
+    <button type="submit" class="btn btn-primary mt-3">Import</button>
+    <a href="{% url 'trade_list' %}" class="btn btn-secondary mt-3">Back</a>
+  </form>
+
+  <hr />
+  <p>📌 CSV Format Example:</p>
+  <pre>
+trade_type,trade_setup_strategy,trade_direction,quantity,entry_price,exit_price,exit_date,target_price,stop_loss_price,fees,trade_return,risk_reward_ratio,notes,trade_outcome,trade_symbol,trade_category,is_swing_trade
+Delivery,GapUp,Long,100,100.5,105.0,2025-08-04,110.0,98.0,5,450.0,2.5,"Good entry",Win,TATASTEEL,intraday,False
+  </pre>
+</div>
+{% endblock %}

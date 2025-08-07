@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-4">Reports</h2>
+
+  <form method="get" class="row g-2 mb-4">
+    <div class="col-md-2">
+      <label>Trade Type</label>
+      <select name="trade_type" class="form-select">
+        <option value="">All</option>
+        <option value="intraday" {% if selected_trade_type == "intraday" %}selected{% endif %}>Intraday</option>
+        <option value="swing" {% if selected_trade_type == "swing" %}selected{% endif %}>Swing</option>
+        <option value="Fno" {% if selected_trade_type == "Fno" %}selected{% endif %}>FnO</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <label>Outcome</label>
+      <select name="trade_outcome" class="form-select">
+        <option value="">All</option>
+        <option value="win" {% if selected_outcome == "win" %}selected{% endif %}>Win</option>
+        <option value="loss" {% if selected_outcome == "loss" %}selected{% endif %}>Loss</option>
+        <option value="break even" {% if selected_outcome == "break even" %}selected{% endif %}>Break Even</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <label>Start Date</label>
+      <input type="date" name="start_date" class="form-control" value="{{ start_date }}">
+    </div>
+    <div class="col-md-2">
+      <label>End Date</label>
+      <input type="date" name="end_date" class="form-control" value="{{ end_date }}">
+    </div>
+    <div class="col-md-2 d-flex align-items-end">
+      <button type="submit" class="btn btn-primary w-100">Filter</button>
+    </div>
+  </form>
+
+  <!-- Summary -->
+  <div class="row text-center mb-4">
+    <div class="col-md-4">
+      <div class="card p-3 shadow-sm">
+        <h6>Total Trades</h6>
+        <h4>{{ total_trades }}</h4>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card p-3 shadow-sm">
+        <h6>Total Profit</h6>
+        <h4>{{ total_profit }}</h4>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card p-3 shadow-sm">
+        <h6>Win %</h6>
+        <h4>{{ win_ratio }}%</h4>
+      </div>
+    </div>
+  </div>
+
+  <!-- Trade Table -->
+  <div class="table-responsive shadow-sm">
+    <table class="table table-bordered table-striped">
+      <thead>
+        <tr>
+          <th>Symbol</th>
+          <th>Type</th>
+          <th>Qty</th>
+          <th>Entry</th>
+          <th>Exit</th>
+          <th>Return</th>
+          <th>Outcome</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for trade in trades %}
+        <tr>
+          <td>{{ trade.trade_symbol }}</td>
+          <td>{{ trade.trade_category }}</td>
+          <td>{{ trade.quantity }}</td>
+          <td>{{ trade.entry_price }}</td>
+          <td>{{ trade.exit_price }}</td>
+          <td>{{ trade.trade_return }}</td>
+          <td>{{ trade.trade_outcome }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="7" class="text-center">No trades found</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Export Buttons -->
+  <div class="mt-3 d-flex justify-content-end">
+    <a href="{% url 'export_excel' %}" class="btn btn-success me-2">Export Excel</a>
+    <a href="{% url 'export_pdf' %}" class="btn btn-danger">Export PDF</a>
+  </div>
+</div>
+{% endblock %}

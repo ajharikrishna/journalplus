@@ -1,0 +1,87 @@
+{% extends 'base.html' %} {% block title %}Deposits & Withdrawals -
+JournalPlus{% endblock %} {% block content %}
+<div class="mt-4">
+  <h3 class="fw-bold text-primary">Account Balance & Transactions</h3>
+
+  <!-- Balance -->
+  <div class="card mt-3 mb-4 shadow-sm border-0">
+    <div class="card-body d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">Current Balance</h5>
+      <h3 class="text-success fw-bold">₹ --</h3>
+    </div>
+  </div>
+
+  <!-- Deposit/Withdraw Form -->
+  <div class="card mb-4 shadow-sm border-0">
+    <div class="card-body">
+      <h5 class="mb-3">Add Deposit / Withdrawal</h5>
+      <form method="POST">
+        {% csrf_token %}
+        <div class="row g-2">
+          <div class="col-md-3">
+            <select name="transaction_type" class="form-select" required>
+              <option value="">Choose Type</option>
+              <option value="deposit">Deposit</option>
+              <option value="withdrawal">Withdrawal</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <input
+              type="number"
+              step="0.01"
+              name="amount"
+              class="form-control"
+              placeholder="Amount"
+              required
+            />
+          </div>
+          <div class="col-md-4">
+            <input
+              type="text"
+              name="note"
+              class="form-control"
+              placeholder="Optional Note"
+            />
+          </div>
+          <div class="col-md-2 d-grid">
+            <button type="submit" class="btn btn-success">Submit</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Transaction History -->
+  <div class="card shadow-sm border-0">
+    <div class="card-body">
+      <h5 class="mb-3">Transaction History</h5>
+      <div class="table-responsive">
+        <table class="table table-striped align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Date</th>
+              <th>Type</th>
+              <th>Amount</th>
+              <th>Note</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for deposit in deposits %}
+            <tr>
+              <td>{{ deposit.date }}</td>
+              <td>
+                <span class="badge bg-success"
+                  >{{ deposit.transaction_type }}</span
+                >
+              </td>
+              <td>₹ {{ deposit.amount }}</td>
+              <td>{{ deposit.note }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

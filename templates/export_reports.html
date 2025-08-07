@@ -1,0 +1,87 @@
+{% extends 'base.html' %} {% block content %}
+<div class="container mt-4">
+  <h2 class="mb-4">Export & Reports</h2>
+
+  <!-- Filter Form -->
+  <form class="row g-3 mb-4">
+    <div class="col-md-3">
+      <label for="startDate" class="form-label">Start Date</label>
+      <input
+        type="date"
+        class="form-control"
+        id="startDate"
+        name="start_date"
+      />
+    </div>
+    <div class="col-md-3">
+      <label for="endDate" class="form-label">End Date</label>
+      <input type="date" class="form-control" id="endDate" name="end_date" />
+    </div>
+    <div class="col-md-3">
+      <label for="category" class="form-label">Trade Category</label>
+      <select class="form-select" id="category" name="category">
+        <option value="">All</option>
+        <option value="intraday">Intraday</option>
+        <option value="swing">Swing</option>
+        <option value="fno">F&O</option>
+      </select>
+    </div>
+    <div class="col-md-3 d-flex align-items-end">
+      <button type="submit" class="btn btn-primary w-100">Apply Filter</button>
+    </div>
+  </form>
+
+  <!-- Export Buttons -->
+  <div class="mb-3">
+    <a href="?export=excel" class="btn btn-success me-2">Export to Excel</a>
+    <a href="?export=pdf" class="btn btn-danger">Export to PDF</a>
+  </div>
+
+  <!-- Trade Report Table -->
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped">
+      <thead class="table-light">
+        <tr>
+          <th>Date</th>
+          <th>Type</th>
+          <th>Direction</th>
+          <th>Qty</th>
+          <th>Entry</th>
+          <th>Exit</th>
+          <th>P/L</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Static mock rows -->
+        <tr>
+          <td>2025-07-01</td>
+          <td>Intraday</td>
+          <td>Long</td>
+          <td>100</td>
+          <td>150.00</td>
+          <td>160.00</td>
+          <td class="text-success">+₹1,000</td>
+        </tr>
+        <tr>
+          <td>2025-07-03</td>
+          <td>Swing</td>
+          <td>Short</td>
+          <td>50</td>
+          <td>200.00</td>
+          <td>190.00</td>
+          <td class="text-success">+₹500</td>
+        </tr>
+        <tr>
+          <td>2025-07-05</td>
+          <td>F&O</td>
+          <td>Long</td>
+          <td>75</td>
+          <td>320.00</td>
+          <td>310.00</td>
+          <td class="text-danger">-₹750</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

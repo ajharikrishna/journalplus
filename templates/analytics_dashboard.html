@@ -1,0 +1,187 @@
+{% extends 'base.html' %} {% load static %} {% block content %}
+<div class="container">
+  <h2 class="mt-4">Analytics Dashboard</h2>
+
+  <!-- Top Stats Cards -->
+  <div class="row mt-4">
+    <div class="col-md-3">
+      <div class="card shadow">
+        <div class="card-body">
+          <h5>Open Trades</h5>
+          <h3>{{ open_trades }}</h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card shadow">
+        <div class="card-body">
+          <h5>Total Exposure</h5>
+          <h3>₹{{ total_exposure|floatformat:2 }}</h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card shadow">
+        <div class="card-body">
+          <h5>Win Rate</h5>
+          <h3>{{ win_rate }}%</h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card shadow">
+        <div class="card-body">
+          <h5>Total P&L</h5>
+          <h3 class="text-success">+₹{{ total_profit_loss|floatformat:2 }}</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Account Summary + Performance Metrics -->
+  <div class="row mt-4">
+    <div class="col-md-6">
+      <div class="card shadow">
+        <div class="card-body">
+          <h5>Account Summary</h5>
+          <p><strong>Account Balance:</strong> ₹{{ account_balance }}</p>
+          <p><strong>Deposited Capital:</strong> ₹{{ deposited_capital }}</p>
+          <p><strong>Realized PnL:</strong> ₹{{ realized_pnl }}</p>
+          <p><strong>Return %:</strong> {{ return_percent }}%</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card shadow">
+        <div class="card-body">
+          <h5>Performance Metrics</h5>
+          <p><strong>Best Trade:</strong> ₹{{ best_trade }}</p>
+          <p><strong>Worst Trade:</strong> ₹{{ worst_trade }}</p>
+          <p><strong>Consecutive Wins:</strong> {{ consecutive_wins }}</p>
+          <p><strong>Consecutive Losses:</strong> {{ consecutive_losses }}</p>
+          <p>
+            <strong>Avg Time in Trade:</strong> {{ avg_time_in_trade }} days
+          </p>
+          <p><strong>Risk-Reward Ratio:</strong> {{ rr_ratio }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Equity Curve Graph -->
+  <div class="row mt-4">
+    <div class="col-md-12">
+      <div class="card shadow">
+        <div class="card-body">
+          <h5>Equity Curve</h5>
+          <canvas id="equityCurveChart" width="200" height="100"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Trade Distributions -->
+  <div class="row mt-4">
+    <div class="col-md-4">
+      <div class="card shadow">
+        <div class="card-body">
+          <h5>Win/Loss Ratio</h5>
+          <canvas id="winLossChart"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card shadow">
+        <div class="card-body">
+          <h5>Trade Types</h5>
+          <canvas id="tradeTypeChart"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card shadow">
+        <div class="card-body">
+          <h5>Mood Distribution</h5>
+          <canvas id="moodChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Monthly Performance -->
+  <div class="row mt-4 mb-5">
+    <div class="col-md-12">
+      <div class="card shadow">
+        <div class="card-body">
+          <h5>Monthly Performance</h5>
+          <canvas id="monthlyPerformanceChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Charts JS (Chart.js) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+
+  // Sample JS placeholders (replace with real data from Django later)
+  const equityCurve = new Chart(document.getElementById('equityCurveChart'), {
+      type: 'line',
+      data: {
+          labels: {{ equity_curve_dates|safe }},
+          datasets: [{
+              label: 'Equity Value',
+              data: {{ equity_curve_values|safe }},
+              fill: false,
+              borderColor: 'green'
+          }]
+      }
+  });
+
+  const winLossChart = new Chart(document.getElementById('winLossChart'), {
+      type: 'doughnut',
+      data: {
+          labels: ['Win', 'Loss'],
+          datasets: [{
+              data: [{{ win_count }}, {{ loss_count }}],
+              backgroundColor: ['#28a745', '#dc3545']
+          }]
+      }
+  });
+
+  const tradeTypeChart = new Chart(document.getElementById('tradeTypeChart'), {
+      type: 'doughnut',
+      data: {
+          labels: ['Long', 'Short'],
+          datasets: [{
+              data: [{{ long_count }}, {{ short_count }}],
+              backgroundColor: ['#ff9800', '#03a9f4']
+          }]
+      }
+  });
+
+  const moodChart = new Chart(document.getElementById('moodChart'), {
+      type: 'doughnut',
+      data: {
+          labels: {{ mood_labels|safe }},
+          datasets: [{
+              data: {{ mood_data|safe }},
+              backgroundColor: ['#007bff', '#dc3545', '#ffc107']
+          }]
+      }
+  });
+
+  const monthlyChart = new Chart(document.getElementById('monthlyPerformanceChart'), {
+      type: 'bar',
+      data: {
+          labels: {{ monthly_labels|safe }},
+          datasets: [{
+              label: 'Monthly P&L',
+              data: {{ monthly_values|safe }},
+              backgroundColor: '#28a745'
+          }]
+      }
+  });
+</script>
+{% endblock %} ''

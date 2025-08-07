@@ -1,0 +1,98 @@
+{% extends 'base.html' %} {% block title %}Performance Summary - JournalPlus -
+{% endblock %} ----- --- {% block content %}
+<div class="mt-4">
+  <h3 class="fw-bold text-primary">Trading Performance Summary</h3>
+
+  <!-- Summary Stats -->
+  <div class="row g-3 mt-3">
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0 text-center">
+        <div class="card-body">
+          <h6>Total Trades</h6>
+          <h3>--</h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0 text-center">
+        <div class="card-body">
+          <h6>Win Ratio</h6>
+          <h3>--%</h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0 text-center">
+        <div class="card-body">
+          <h6>Total Profit/Loss</h6>
+          <h3 class="text-success">₹ --</h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0 text-center">
+        <div class="card-body">
+          <h6>Avg Return</h6>
+          <h3>--%</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Section -->
+  <div class="row mt-4 g-4">
+    <div class="col-md-6">
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <h5>Monthly Returns</h5>
+          <canvas id="monthlyChart" height="200"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <h5>Trade Type Distribution</h5>
+          <canvas id="typeChart" height="200"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // Monthly Returns Chart (Placeholder)
+  const monthlyCtx = document.getElementById("monthlyChart");
+  new Chart(monthlyCtx, {
+    type: "line",
+    data: {
+      labels: ["Jan", "Feb", "Mar", "Apr", "May"],
+      datasets: [
+        {
+          label: "Returns (₹)",
+          data: [2000, -500, 3000, 1500, 1000],
+          borderColor: "#4e73df",
+          backgroundColor: "rgba(78, 115, 223, 0.1)",
+          tension: 0.3,
+        },
+      ],
+    },
+  });
+
+  // Trade Type Pie Chart (Placeholder)
+  const typeCtx = document.getElementById("typeChart");
+  new Chart(typeCtx, {
+    type: "pie",
+    data: {
+      labels: ["Intraday", "Swing", "FnO"],
+      datasets: [
+        {
+          data: [12, 8, 5],
+          backgroundColor: ["#1cc88a", "#36b9cc", "#f6c23e"],
+        },
+      ],
+    },
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends 'base.html' %} {% block title %}Deposits & Withdrawals -
+JournalPlus{% endblock %} {% block content %}
+<div class="container mt-4">
+  <h3 class="text-primary mb-4">Deposits & Withdrawals</h3>
+  <table class="table table-bordered table-striped">
+    <thead class="table-dark">
+      <tr>
+        <th>Date</th>
+        <th>Amount</th>
+        <th>Type</th>
+        <th>Note</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in deposits %}
+      <tr>
+        <td>{{ item.date }}</td>
+        <td
+          class="{% if item.transaction_type == 'withdrawal' %}text-danger{% else %}text-success{% endif %}"
+        >
+          ₹{{ item.amount }}
+        </td>
+        <td>{{ item.transaction_type|title }}</td>
+        <td>{{ item.note }}</td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="4">No transactions found.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

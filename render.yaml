@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: journalplus
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn journalplus.wsgi

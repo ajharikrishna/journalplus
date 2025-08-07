@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-4">Dashboard Summary</h2>
+
+  <!-- Filter Form -->
+  <form method="get" class="row g-3 mb-4">
+    <div class="col-md-3">
+      <label for="start_date" class="form-label">From Date</label>
+      <input type="date" id="start_date" name="start_date" value="{{ request.GET.start_date }}" class="form-control" />
+    </div>
+    <div class="col-md-3">
+      <label for="end_date" class="form-label">To Date</label>
+      <input type="date" id="end_date" name="end_date" value="{{ request.GET.end_date }}" class="form-control" />
+    </div>
+    <div class="col-md-3">
+      <label for="strategy" class="form-label">Strategy</label>
+      <select id="strategy" name="strategy" class="form-select">
+        <option value="">All</option>
+        {% for s in strategies %}
+          <option value="{{ s }}" {% if request.GET.strategy == s %}selected{% endif %}>{{ s }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-3">
+      <label for="trade_type" class="form-label">Trade Type</label>
+      <select id="trade_type" name="trade_type" class="form-select">
+        <option value="">All</option>
+        <option value="intraday" {% if request.GET.trade_type == "intraday" %}selected{% endif %}>Intraday</option>
+        <option value="swing" {% if request.GET.trade_type == "swing" %}selected{% endif %}>Swing</option>
+        <option value="Fno" {% if request.GET.trade_type == "Fno" %}selected{% endif %}>F&O</option>
+      </select>
+    </div>
+
+    <div class="col-12">
+      <button type="submit" class="btn btn-primary">Apply Filters</button>
+      <a href="{% url 'dashboard' %}" class="btn btn-secondary ms-2">Reset</a>
+    </div>
+  </form>
+
+  <!-- Summary Cards -->
+  <div class="row text-center mb-4">
+    <div class="col-md-4">
+      <div class="card bg-light shadow rounded p-3">
+        <h5>Total Trades</h5>
+        <h3>{{ total_trades }}</h3>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card bg-light shadow rounded p-3">
+        <h5>Winning %</h5>
+        <h3>{{ win_percentage }}%</h3>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card bg-light shadow rounded p-3">
+        <h5>Avg Return</h5>
+        <h3>{{ avg_return }}%</h3>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Row -->
+  <div class="row">
+    <!-- P&L Chart -->
+    <div class="col-md-8">
+      <div class="card p-3 shadow rounded">
+        <h5>P&L Over Time</h5>
+        <canvas id="plChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Outcome Pie -->
+    <div class="col-md-4">
+      <div class="card p-3 shadow rounded">
+        <h5>Trade Outcome</h5>
+        <canvas id="outcomeChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Chart Data -->
+<!-- Add these inside your <script> tag in dashboard.html -->
+  {% comment %} {% with win=outcome_data.Win loss=outcome_data.Loss be=outcome_data.Break_Even %}
+<script>
+  const labels = {{ labels|safe }};
+  const data = {{ data|safe }};
+
+  const plChart = new Chart(document.getElementById("plChart"), {
+    type: "line",
+    data: {
+      labels: labels,
+      datasets: [{
+        label: "P&L",
+        data: data,
+        borderColor: "green",
+        fill: false,
+        tension: 0.4,
+      }],
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+      },
+    },
+  });
+
+
+
+   const outcomeChart = new Chart(document.getElementById("outcomeChart"), {
+    type: "doughnut",
+    data: {
+      labels: ["Win", "Loss", "Break Even"],
+      datasets: [
+        {
+          label: "Trade Results",
+          data: [{{ win }}, {{ loss }}, {{ be }}],
+          backgroundColor: ["#28a745", "#dc3545", "#ffc107"],
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: "bottom" },
+      },
+    },
+  });
+  {% endwith %}
+</script> {% endcomment %}
+
+<script>
+  const plChart = new Chart(document.getElementById("plChart"), {
+    type: "line",
+    data: {
+      labels: {{ labels|safe }},
+      datasets: [{
+        label: "P&L",
+        data: {{ data|safe }},
+        borderColor: "green",
+        fill: false,
+        tension: 0.4,
+      }],
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+      },
+    },
+  });
+
+  const outcomeChart = new Chart(document.getElementById("outcomeChart"), {
+    type: "doughnut",
+    data: {
+      labels: ["Win", "Loss", "Break Even"],
+      datasets: [{
+        label: "Trade Results",
+        data: [
+          {{ outcome_data.win }},
+          {{ outcome_data.loss }},
+          {{ outcome_data.breakeven }}
+        ],
+        backgroundColor: ["#28a745", "#dc3545", "#ffc107"],
+      }],
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: "bottom" },
+      },
+    },
+  });
+</script> 
+{% endblock %}

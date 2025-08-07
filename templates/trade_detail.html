@@ -1,0 +1,52 @@
+{% extends 'base.html' %} {% block title %}Trade Detail - {{ trade.trade_symbol
+}}{% endblock %} {% block content %}
+<div class="container mt-4">
+  <h3 class="fw-bold text-primary mb-3">
+    Trade Detail: {{ trade.trade_symbol }}
+  </h3>
+
+  <div class="row">
+    <div class="col-md-6">
+      <p><strong>Trade Type:</strong> {{ trade.trade_type }}</p>
+      <p><strong>Category:</strong> {{ trade.trade_category }}</p>
+      <p><strong>Strategy:</strong> {{ trade.trade_setup_strategy }}</p>
+      <p><strong>Direction:</strong> {{ trade.trade_direction }}</p>
+      <p><strong>Quantity:</strong> {{ trade.quantity }}</p>
+      <p><strong>Entry Price:</strong> ₹{{ trade.entry_price }}</p>
+      <p><strong>Exit Price:</strong> ₹{{ trade.exit_price }}</p>
+      <p><strong>Target Price:</strong> ₹{{ trade.target_price }}</p>
+      <p><strong>Stop Loss:</strong> ₹{{ trade.stop_loss_price }}</p>
+    </div>
+
+    <div class="col-md-6">
+      <p><strong>Fees:</strong> ₹{{ trade.fees }}</p>
+      <p><strong>P&L:</strong> ₹{{ trade.trade_return }}</p>
+      <p><strong>Risk/Reward:</strong> {{ trade.risk_reward_ratio }}</p>
+      <p><strong>Outcome:</strong> {{ trade.trade_outcome }}</p>
+      <p><strong>Exit Date:</strong> {{ trade.exit_date }}</p>
+      <p><strong>Notes:</strong> {{ trade.notes }}</p>
+      {% if trade.image %}
+      <p>
+        <strong>Screenshot:</strong><br />
+        <a href="{{ trade.image.url }}" target="_blank">
+          <img
+            src="{{ trade.image.url }}"
+            alt="Screenshot"
+            class="img-fluid rounded"
+            style="max-width: 100%; height: auto"
+          />
+        </a>
+      </p>
+      {% else %}
+      <p><em>No image uploaded for this trade.</em></p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="mt-4">
+    <a href="{% url 'trade_list' %}" class="btn btn-secondary"
+      >← Back to List</a
+    >
+  </div>
+</div>
+{% endblock %}

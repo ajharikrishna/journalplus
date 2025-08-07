@@ -1,0 +1,52 @@
+.calendar-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px;
+}
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.month-summary {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.month-summary .box {
+  flex: 1;
+  padding: 10px;
+  background: #f8f8f8;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+}
+.calendar-day {
+  padding: 12px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  min-height: 80px;
+  position: relative;
+  cursor: pointer;
+  background-color: #fefefe;
+}
+.calendar-day:hover {
+  background-color: #f0faff;
+}
+.day-has-trade {
+  background-color: #e6fff5;
+  border-left: 4px solid #28a745;
+}
+.day-number {
+  font-weight: bold;
+}
+.trade-summary {
+  font-size: 0.9rem;
+  margin-top: 5px;
+}

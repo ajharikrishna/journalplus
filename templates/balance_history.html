@@ -1,0 +1,171 @@
+{% extends 'base.html' %} {% load static %} {% block title %}Balance &
+Transactions{% endblock %} {% block content %}
+<div class="container mt-4">
+  <h3 class="fw-bold text-primary mb-4">💰 Account Balance & Transactions</h3>
+
+  <!-- Filter Section -->
+  <form method="get" class="row g-2 mb-4 align-items-end">
+    <div class="col-md-3">
+      <label class="form-label">From</label>
+      <input
+        type="date"
+        name="start_date"
+        class="form-control"
+        value="{{ start_date }}"
+      />
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">To</label>
+      <input
+        type="date"
+        name="end_date"
+        class="form-control"
+        value="{{ end_date }}"
+      />
+    </div>
+    <div class="col-md-3">
+      <button class="btn btn-outline-primary w-100">Apply Filter</button>
+    </div>
+    <div class="col-md-3">
+      <a
+        href="{% url 'balance_history' %}"
+        class="btn btn-outline-secondary w-100"
+        >Reset</a
+      >
+    </div>
+  </form>
+
+  <!-- Balance Display -->
+  <div class="card mb-4 shadow-sm border-0">
+    <div class="card-body d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">Current Balance</h5>
+      <h3 class="text-success fw-bold">₹ {{ balance }}</h3>
+    </div>
+  </div>
+
+  <!-- Deposit/Withdraw Form -->
+  <div class="card mb-4 shadow-sm border-0">
+    <div class="card-body">
+      <h5 class="mb-3">Add Deposit / Withdrawal</h5>
+      <form method="POST" action="{% url 'add_transaction' %}">
+        {% csrf_token %}
+        <div class="row g-3">
+          <div class="col-md-3">
+            {{ form.transaction_type.label_tag }} {{ form.transaction_type }}
+          </div>
+          <div class="col-md-3">
+            {{ form.amount.label_tag }} {{ form.amount }}
+          </div>
+          <div class="col-md-4">
+            {{ form.note.label_tag }}
+            <input
+              type="text"
+              name="note"
+              class="form-control"
+              maxlength="60"
+              placeholder="Short note (max 60 chars)"
+            />
+          </div>
+          <div class="col-md-2 d-grid">
+            <button type="submit" class="btn btn-success mt-4">Submit</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Combined Chart -->
+  <div class="card p-3 shadow-sm border-0 mb-4">
+    <h5 class="mb-3">Overall Breakdown</h5>
+    <div class="chart-container" style="max-width: 500px; margin: auto">
+      <canvas id="combinedChart" height="300"></canvas>
+    </div>
+  </div>
+
+  <!-- Transaction History -->
+  <div class="card shadow-sm border-0">
+    <div class="card-body">
+      <h5 class="mb-3">Transaction History</h5>
+      <div class="table-responsive">
+        <table class="table table-striped table-bordered align-middle">
+          <thead class="table-light">
+            <tr>
+              <th style="min-width: 140px">Date</th>
+              <th style="min-width: 100px">Type</th>
+              <th style="min-width: 120px">Amount</th>
+              <th>Note</th>
+              <th style="min-width: 140px">Running Balance</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in running %} {% with tx=item.transaction %}
+            <tr>
+              <td>{{ tx.created_at|date:"d M Y, h:i A" }}</td>
+              <td>
+                {% if tx.transaction_type == 'deposit' %}
+                <span class="badge bg-success">Deposit</span>
+                {% elif tx.transaction_type == 'withdrawal' %}
+                <span class="badge bg-danger">Withdrawal</span>
+                {% else %}
+                <span class="badge bg-primary">Trade</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if tx.transaction_type == 'withdrawal' %}
+                -₹{{tx.amount|floatformat:2 }} {% else %}
+                +₹{{tx.amount|floatformat:2 }} {% endif %}
+              </td>
+              <td class="text-truncate" style="max-width: 250px">
+                {{ tx.note }}
+              </td>
+              <td>₹ {{ item.running_balance }}</td>
+            </tr>
+            {% endwith %} {% empty %}
+            <tr>
+              <td colspan="5" class="text-center">No transactions yet.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const combinedCtx = document.getElementById('combinedChart').getContext('2d');
+
+  new Chart(combinedCtx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Deposits', 'Withdrawals', 'Wins', 'Losses', 'Break-even'],
+      datasets: [{
+        data: [
+          {{ combined_chart_data.deposits }},
+          {{ combined_chart_data.withdrawals }},
+          {{ combined_chart_data.wins }},
+          {{ combined_chart_data.losses }},
+          {{ combined_chart_data.breakeven }},
+        ],
+        backgroundColor: [
+          '#28a745',  // Deposits - Green
+          '#dc3545',  // Withdrawals - Red
+          '#17a2b8',  // Wins - Blue
+          '#6c757d',  // Losses - Gray
+          '#ffc107'   // Break-even - Yellow
+        ],
+      }]
+    },
+    options: {
+      plugins: {
+        legend: { position: 'bottom' }
+      },
+      responsive: true,
+      maintainAspectRatio: false
+    }
+  });
+</script>
+
+{% endblock %}
