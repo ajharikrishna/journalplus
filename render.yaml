@@ -2,5 +2,11 @@ services:
   - type: web
     name: journalplus
     env: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn journalplus.wsgi
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn journalplus.wsgi:application"
+    staticPublishPath: static
+    routes:
+      - type: rewrite
+        source: /media/(.*)
+        destination: /media/\1
+        status: 200
